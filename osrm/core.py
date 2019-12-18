@@ -192,10 +192,10 @@ def simple_route(coord_origin, coord_dest, coord_intermediate=None,
             url.append(";")
         url.extend([
             '{},{}'.format(coord_dest[0], coord_dest[1]),
-            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}&exclude={}".format(
+            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}".format(
                  overview, str(steps).lower(),
                  str(alternatives).lower(), geom_request, annotations,
-                 continue_straight, ','.join(exclude))
+                 continue_straight)
             ])
     else:
         coords = [
@@ -207,11 +207,13 @@ def simple_route(coord_origin, coord_dest, coord_intermediate=None,
         url = [
             host, "/route/", url_config.version, "/", url_config.profile, "/",
             "polyline(", quote(polyline_encode(coords)), ")",
-            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}&exclude={}".format(
+            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}".format(
                  overview, str(steps).lower(),
                  str(alternatives).lower(), geom_request, annotations,
-                 continue_straight, ','.join(exclude))
+                 continue_straight)
             ]
+    if exclude:
+        url.extend("&exclude={}".format(','.join(exclude)))
     req = Request("".join(url))
     if url_config.auth:
         req.add_header("Authorization", url_config.auth)
