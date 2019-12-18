@@ -134,7 +134,8 @@ def simple_route(coord_origin, coord_dest, coord_intermediate=None,
                  alternatives=False, steps=False, output="full",
                  geometry='polyline', overview="simplified",
                  annotations='true', continue_straight='default',
-                 url_config=RequestConfig, send_as_polyline=True):
+                 url_config=RequestConfig, send_as_polyline=True,
+                 exclude=None):
     """
     Function wrapping OSRM 'viaroute' function and returning the JSON reponse
     with the route_geometry decoded (in WKT or WKB) if needed.
@@ -163,6 +164,8 @@ def simple_route(coord_origin, coord_dest, coord_intermediate=None,
         (Default: "simplified")
     url_config : osrm.RequestConfig, optional
         Parameters regarding the host, version and profile to use
+    exclude : [str], optional
+        Array of String Name of the classes to exclude.
 
     Returns
     -------
@@ -189,10 +192,10 @@ def simple_route(coord_origin, coord_dest, coord_intermediate=None,
             url.append(";")
         url.extend([
             '{},{}'.format(coord_dest[0], coord_dest[1]),
-            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}".format(
+            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}&exclude={}".format(
                  overview, str(steps).lower(),
                  str(alternatives).lower(), geom_request, annotations,
-                 continue_straight)
+                 continue_straight, ','.join(exclude))
             ])
     else:
         coords = [
@@ -204,10 +207,10 @@ def simple_route(coord_origin, coord_dest, coord_intermediate=None,
         url = [
             host, "/route/", url_config.version, "/", url_config.profile, "/",
             "polyline(", quote(polyline_encode(coords)), ")",
-            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}".format(
+            "?overview={}&steps={}&alternatives={}&geometries={}&annotations={}&continue_straight={}&exclude={}".format(
                  overview, str(steps).lower(),
                  str(alternatives).lower(), geom_request, annotations,
-                 continue_straight)
+                 continue_straight, ','.join(exclude))
             ]
     req = Request("".join(url))
     if url_config.auth:
